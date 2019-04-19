@@ -7,3 +7,6 @@ jobs:
     steps:
       - checkout
       - run: make
+      - store_artifacts:
+          path: .build/sprk
+          destination: binaries
