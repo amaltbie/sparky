@@ -8,5 +8,6 @@ jobs:
       - checkout
       - run: make
       - store_artifacts:
-          path: .build/sprk
-          destination: binaries
+          path: .build/sprk-linux
+      - store_artifacts:
+          path: .build/sprk-darwin
