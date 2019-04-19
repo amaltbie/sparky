@@ -2,6 +2,11 @@
 SRCPATH := github.com/amaltbie/sparky
 SOURCE := $(shell find $(PWD) -name '*.go')
 USERSTR := $(shell id -u):$(shell id -g)
+OSTYPE := $(shell uname | tr '[:upper:]' '[:lower:]')
+
+ifndef DESTDIR
+	DESTDIR := /usr/local
+endif
 
 .docker: docker/Dockerfile
 	docker build -t sparky-build docker/
@@ -16,7 +21,7 @@ USERSTR := $(shell id -u):$(shell id -g)
 .build:
 	mkdir -p .build
 
-.build/sprk-darwin: $(SOURCE) .docker .cache .gopath .build
+.build/sprk-darwin: $(SOURCE) .docker | .cache .gopath .build
 	docker run \
 		-v $(PWD):/go/src/$(SRCPATH) \
 		-u $(USERSTR) \
@@ -28,7 +33,7 @@ USERSTR := $(shell id -u):$(shell id -g)
 		-w /go/src/$(SRCPATH) sparky-build \
 		go build -o /go/src/$(SRCPATH)/.build/sprk-darwin
 
-.build/sprk-linux: $(SOURCE) .docker .cache .gopath .build
+.build/sprk-linux: $(SOURCE) .docker | .cache .gopath .build
 	docker run \
 		-v $(PWD):/go/src/$(SRCPATH) \
 		-u $(USERSTR) \
@@ -48,5 +53,9 @@ clean:
 clobber: clean
 	rm -rf .gopath
 	rm -rf .cache
+
+install:
+	mkdir -p $(DESTDIR)/bin
+	install .build/sprk-$(OSTYPE) $(DESTDIR)/bin/sprk
 
 .DEFAULT_GOAL := build
