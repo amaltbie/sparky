@@ -7,10 +7,16 @@ USERSTR := $(shell id -u):$(shell id -g)
 	docker build -t sparky-build docker/
 	touch .docker
 
-.build/sprk-darwin: $(SOURCE) .docker
+.cache:
 	mkdir -p .cache
-	mkdir -p .build
+
+.gopath:
 	mkdir -p .gopath
+
+.build:
+	mkdir -p .build
+
+.build/sprk-darwin: $(SOURCE) .docker .cache .gopath .build
 	docker run \
 		-v $(PWD):/go/src/$(SRCPATH) \
 		-u $(USERSTR) \
@@ -22,10 +28,7 @@ USERSTR := $(shell id -u):$(shell id -g)
 		-w /go/src/$(SRCPATH) sparky-build \
 		go build -o /go/src/$(SRCPATH)/.build/sprk-darwin
 
-.build/sprk-linux: $(SOURCE) .docker
-	mkdir -p .cache
-	mkdir -p .build
-	mkdir -p .gopath
+.build/sprk-linux: $(SOURCE) .docker .cache .gopath .build
 	docker run \
 		-v $(PWD):/go/src/$(SRCPATH) \
 		-u $(USERSTR) \
@@ -40,4 +43,10 @@ USERSTR := $(shell id -u):$(shell id -g)
 build: .build/sprk-darwin .build/sprk-linux
 
 clean:
-	rm .build/sprk
+	rm -rf .build
+
+clobber: clean
+	rm -rf .gopath
+	rm -rf .cache
+
+.DEFAULT_GOAL := build
