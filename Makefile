@@ -7,6 +7,9 @@ OSTYPE := $(shell uname | tr '[:upper:]' '[:lower:]')
 ifndef DESTDIR
 	DESTDIR := /usr/local
 endif
+ifndef VERSION
+	VERSION := local-$(shell git rev-parse HEAD | cut -c-8)
+endif
 
 .docker: docker/Dockerfile
 	docker build -t sparky-build docker/
@@ -31,7 +34,9 @@ endif
 		-e GO111MODULE=on \
 		-e GOPATH=/gopath \
 		-w /go/src/$(SRCPATH) sparky-build \
-		go build -o /go/src/$(SRCPATH)/.build/sprk-darwin
+		go build \
+		-o /go/src/$(SRCPATH)/.build/sprk-darwin \
+		-ldflags "-X github.com/amaltbie/sparky/cmd.Version=${VERSION}"
 
 .build/sprk-linux: $(SOURCE) .docker | .cache .gopath .build
 	docker run \
@@ -43,7 +48,9 @@ endif
 		-e GO111MODULE=on \
 		-e GOPATH=/gopath \
 		-w /go/src/$(SRCPATH) sparky-build \
-		go build -o /go/src/$(SRCPATH)/.build/sprk-linux
+		go build \
+		-o /go/src/$(SRCPATH)/.build/sprk-linux \
+		-ldflags "-X github.com/amaltbie/sparky/cmd.Version=${VERSION}"
 
 build: .build/sprk-darwin .build/sprk-linux
 

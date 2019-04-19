@@ -1,10 +1,7 @@
-// Copyright © 2019 Arlo Maltbie <arlomltb@gmail.com>
-
-
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"os/exec"
 
@@ -19,13 +16,13 @@ var buildCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		_, err := os.Stat("Makefile")
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 		out, err := exec.Command("make").Output()
 		if err != nil {
-			panic(err)
+			log.Fatalf("%s\n%n\n", out, err)
 		}
-		fmt.Printf("%s\n", out)
+		log.Printf("%s\n", out)
 	},
 }
 

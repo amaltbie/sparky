@@ -13,7 +13,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "sparky",
+	Use:   "sprk",
 	Short: "Sparky is a good dog and can do all kinds of tricks",
 }
 
