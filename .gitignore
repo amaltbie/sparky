@@ -2,3 +2,5 @@
 /.build
 /.cache
 /.docker
+*.swp
+*.log
